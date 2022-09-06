@@ -1,0 +1,28 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: storageclass
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-standard
+  fstype: ext4
+  replication-type: regional-pd
+allowedTopologies:
+  - matchLabelExpressions:
+      - key: failure-domain.beta.kubernetes.io/zone
+        values:
+          - europe-west3-a
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+  labels:
+    app: wordpress
+spec:
+  storageClassName: storageclass
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 4Gi
